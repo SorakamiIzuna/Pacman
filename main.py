@@ -1,7 +1,7 @@
 import pygame
 import sys
 from maze import draw_maze
-
+from entities.pacman import Pacman
 
 pygame.init()
 
@@ -14,6 +14,8 @@ WHITE = (255, 255, 255)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pac-Man Game")
 
+pacman = Pacman()
+
 clock = pygame.time.Clock()
 game_running = True
 
@@ -24,8 +26,9 @@ def game_loop():
             if event.type == pygame.QUIT:
                 game_running = False
 
-        screen.fill((0, 0, 0))  # Nền đen
-        draw_maze(screen)      # Vẽ mê cung
+        screen.fill((0, 0, 0))  
+        draw_maze(screen)      
+        pacman.draw(screen)
 
 
         pygame.display.update()
