@@ -3,6 +3,7 @@ import sys
 from maze import draw_maze, TILE_SIZE, MAZE_LAYOUT
 from entities.pacman import Pacman
 from entities.pinkGhost import PinkGhost
+from entities.orangeGhost import OrangeGhost
 
 # Khởi tạo Pygame
 pygame.init()
@@ -14,16 +15,24 @@ SCREEN_WIDTH = COLS * TILE_SIZE
 SCREEN_HEIGHT = ROWS * TILE_SIZE + 40  # Thêm vùng nút điều khiển
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Pac-Man with Pink Ghost")
+pygame.display.set_caption("Pac-Man")
 clock = pygame.time.Clock()
 FONT = pygame.font.SysFont(None, 24)
 
 # Khởi tạo đối tượng
 pacman = Pacman()
 pink_ghost = PinkGhost()
+orange_ghost = OrangeGhost()
 
 FPS = 10
 start_pressed = False
+#tránh spawn trùng nhau
+def prevent_ghost_collisions(ghosts):
+    occupied_positions = set()
+    for ghost in ghosts:
+        while (ghost.x, ghost.y) in occupied_positions:
+            ghost.reset_position()
+        occupied_positions.add((ghost.x, ghost.y))
 
 def draw_buttons():
     reset_button = pygame.Rect(10, SCREEN_HEIGHT - 35, 80, 30)
@@ -46,6 +55,7 @@ def game_loop():
         # Vẽ Pacman và Ghost
         pacman.draw(screen, TILE_SIZE)
         pink_ghost.draw(screen, TILE_SIZE)
+        orange_ghost.draw(screen, TILE_SIZE)
 
         # Vẽ nút bấm
         reset_btn, start_btn = draw_buttons()
@@ -58,14 +68,18 @@ def game_loop():
                 if reset_btn.collidepoint(event.pos):
                     pacman.reset_position()
                     pink_ghost.reset_position()
+                    orange_ghost.reset_position()
+                    prevent_ghost_collisions([pink_ghost, orange_ghost])
                     start_pressed = False
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                    orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
 
         # Di chuyển ghost nếu đã bắt đầu
         if start_pressed and pink_ghost.path:
             pink_ghost.move_step()
+            orange_ghost.move_step()
 
         pygame.display.update()
         clock.tick(FPS)
