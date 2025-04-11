@@ -10,7 +10,7 @@ class Pacman:
         for row_index, row in enumerate(MAZE_LAYOUT):
             for col_index, cell in enumerate(row):
                 if cell == '0':
-                    return col_index, row_index  # Cột là x, hàng là y
+                    return col_index, row_index
 
     def reset_position(self):
         self.x, self.y = self.initial_position
