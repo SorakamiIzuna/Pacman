@@ -46,5 +46,4 @@ def draw_maze(screen):
             y = row_index * TILE_SIZE
             if tile == '1':
                 pygame.draw.rect(screen, WALL_COLOR, (x, y, TILE_SIZE, TILE_SIZE))
-            # else: tile == '0', không vẽ gì (để lộ màu nền)
 

@@ -1,23 +1,20 @@
 import random
-import pygame 
-from maze import MAZE_LAYOUT, TILE_SIZE
+from maze import MAZE_LAYOUT
 
 class Pacman:
     def __init__(self):
-        self.x, self.y = self.get_random_position()
+        self.initial_position = self.find_fixed_position()
+        self.x, self.y = self.initial_position
 
-    def get_random_position(self):
-        valid_positions = []
-        for row_idx, row in enumerate(MAZE_LAYOUT):
-            for col_idx, tile in enumerate(row):
-                if tile == '0':
-                    x = col_idx * TILE_SIZE
-                    y = row_idx * TILE_SIZE
-                    valid_positions.append((x, y))
-        return random.choice(valid_positions)
+    def find_fixed_position(self):
+        for row_index, row in enumerate(MAZE_LAYOUT):
+            for col_index, cell in enumerate(row):
+                if cell == '0':
+                    return col_index, row_index  # Cột là x, hàng là y
 
-    def draw(self, screen):
-        PACMAN_COLOR = (255, 255, 0)
-        radius = TILE_SIZE // 2
-        center = (self.x + radius, self.y + radius)
-        pygame.draw.circle(screen, PACMAN_COLOR, center, radius)
+    def reset_position(self):
+        self.x, self.y = self.initial_position
+
+    def draw(self, screen, tile_size):
+        import pygame
+        pygame.draw.circle(screen, (255, 255, 0), ((self.x + 0.5) * tile_size, (self.y + 0.5) * tile_size), tile_size // 2)
