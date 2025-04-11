@@ -14,16 +14,18 @@ MAZE_LAYOUT = [
     "100000000000000000001",
     "101110101111101011101",
     "100000100010001000001",
-    "111110111010111011111",
-    "111110100000001011111", # Khu vực trên nhà ma # Tường trên nhà ma
-    "111110101111101011111", # Tường hai bên nhà ma
-    "000000001111100000000", # Coi cổng nhà ma là đường đi '0'
-    "111110101111101011111", # Tường hai bên nhà ma
-    "111110100000001011111", # Khu vực dưới nhà ma
-    "111110101111101011111", # Tường dưới nhà ma
+    "110110111010111011011",
+    "110010100000001010011",  
+    "111010101101101010111", 
+    "111010101000101010111", 
+    "000000000010000000000", 
+    "110110101000101011011",
+    "110110101101101011011",  
+    "110010100000001010011", 
+    "111010101111101010111", 
     "100000000010000000001",
     "101110111010111011101",
-    "100010000000000010001", # Lưu ý các tường đơn gần vị trí power pellets
+    "100010000000000010001",
     "111010101111101010111",
     "100000100010001000001",
     "101111111010111111101",
@@ -36,7 +38,6 @@ MAZE_LAYOUT = [
 def draw_maze(screen):
     """Vẽ mê cung lên màn hình dựa trên MAZE_LAYOUT."""
     for row_index, row in enumerate(MAZE_LAYOUT):
-        # Kiểm tra độ dài hàng để tránh lỗi nếu layout không đồng nhất (tùy chọn)
         # if len(row) != len(MAZE_LAYOUT[0]):
         #    print(f"Warning: Row {row_index} has inconsistent length.")
         #    continue
@@ -47,28 +48,3 @@ def draw_maze(screen):
                 pygame.draw.rect(screen, WALL_COLOR, (x, y, TILE_SIZE, TILE_SIZE))
             # else: tile == '0', không vẽ gì (để lộ màu nền)
 
-# --- Phần code Pygame để chạy và hiển thị (ví dụ) ---
-if __name__ == '__main__':
-    pygame.init()
-
-    # Tính toán kích thước màn hình dựa trên layout và TILE_SIZE
-    maze_cols = len(MAZE_LAYOUT[0])
-    maze_rows = len(MAZE_LAYOUT)
-    SCREEN_WIDTH = maze_cols * TILE_SIZE
-    SCREEN_HEIGHT = maze_rows * TILE_SIZE
-    BG_COLOR = (0, 0, 0) # Màu nền đen
-
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Maze Display")
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        screen.fill(BG_COLOR) # Xóa màn hình với màu nền
-        draw_maze(screen)     # Vẽ mê cung
-        pygame.display.flip() # Cập nhật màn hình
-
-    pygame.quit()
