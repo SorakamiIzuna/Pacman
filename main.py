@@ -1,17 +1,24 @@
 import pygame
 import sys
-from maze import draw_maze, TILE_SIZE
+from maze import draw_maze, TILE_SIZE, MAZE_LAYOUT
 from entities.pacman import Pacman
 from entities.pinkGhost import PinkGhost
 
+# Khởi tạo Pygame
 pygame.init()
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
+
+# Tính kích thước màn hình dựa trên kích thước mê cung
+ROWS = len(MAZE_LAYOUT)
+COLS = len(MAZE_LAYOUT[0])
+SCREEN_WIDTH = COLS * TILE_SIZE
+SCREEN_HEIGHT = ROWS * TILE_SIZE + 40  # Thêm vùng nút điều khiển
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pac-Man with Pink Ghost")
 clock = pygame.time.Clock()
 FONT = pygame.font.SysFont(None, 24)
 
+# Khởi tạo đối tượng
 pacman = Pacman()
 pink_ghost = PinkGhost()
 
@@ -19,12 +26,12 @@ FPS = 10
 start_pressed = False
 
 def draw_buttons():
-    reset_button = pygame.Rect(10, 560, 80, 30)
-    start_button = pygame.Rect(100, 560, 80, 30)
+    reset_button = pygame.Rect(10, SCREEN_HEIGHT - 35, 80, 30)
+    start_button = pygame.Rect(100, SCREEN_HEIGHT - 35, 80, 30)
     pygame.draw.rect(screen, (200, 200, 200), reset_button)
     pygame.draw.rect(screen, (0, 255, 0), start_button)
-    screen.blit(FONT.render("Reset", True, (0, 0, 0)), (20, 565))
-    screen.blit(FONT.render("Start", True, (0, 0, 0)), (115, 565))
+    screen.blit(FONT.render("Reset", True, (0, 0, 0)), (20, SCREEN_HEIGHT - 30))
+    screen.blit(FONT.render("Start", True, (0, 0, 0)), (115, SCREEN_HEIGHT - 30))
     return reset_button, start_button
 
 def game_loop():
@@ -32,12 +39,18 @@ def game_loop():
     running = True
     while running:
         screen.fill((0, 0, 0))
+
+        # Vẽ mê cung
         draw_maze(screen)
+
+        # Vẽ Pacman và Ghost
         pacman.draw(screen, TILE_SIZE)
         pink_ghost.draw(screen, TILE_SIZE)
 
+        # Vẽ nút bấm
         reset_btn, start_btn = draw_buttons()
 
+        # Xử lý sự kiện
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -50,6 +63,7 @@ def game_loop():
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
 
+        # Di chuyển ghost nếu đã bắt đầu
         if start_pressed and pink_ghost.path:
             pink_ghost.move_step()
 
