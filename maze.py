@@ -2,10 +2,8 @@ import pygame
 
 # Màu sắc
 WALL_COLOR = (0, 0, 255)
-TILE_SIZE = 24 # Giữ nguyên kích thước ô hoặc điều chỉnh nếu cần để vừa màn hình
+TILE_SIZE = 24
 
-# Ma trận mô tả mê cung: 1 là tường, 0 là đường (bao gồm cả vị trí pellets và không gian nhà ma)
-# Layout này được tạo dựa trên hình ảnh image_4b71cd.jpg (19 cột x 23 hàng)
 MAZE_LAYOUT = [
     "1111111111111111111111111111",
     "1000000000000110000000000001",
