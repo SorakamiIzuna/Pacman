@@ -3,17 +3,19 @@ import sys
 from maze import draw_maze, TILE_SIZE
 from entities.pacman import Pacman
 from entities.pinkGhost import PinkGhost
+from entities.blueGhost import BlueGhost
 
 pygame.init()
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Pac-Man with Pink Ghost")
+pygame.display.set_caption("Pac-Man with Pink and Blue Ghosts")
 clock = pygame.time.Clock()
 FONT = pygame.font.SysFont(None, 24)
 
 pacman = Pacman()
 pink_ghost = PinkGhost()
+blue_ghost = BlueGhost()
 
 FPS = 10
 start_pressed = False
@@ -35,6 +37,7 @@ def game_loop():
         draw_maze(screen)
         pacman.draw(screen, TILE_SIZE)
         pink_ghost.draw(screen, TILE_SIZE)
+        blue_ghost.draw(screen, TILE_SIZE)
 
         reset_btn, start_btn = draw_buttons()
 
@@ -45,13 +48,18 @@ def game_loop():
                 if reset_btn.collidepoint(event.pos):
                     pacman.reset_position()
                     pink_ghost.reset_position()
+                    blue_ghost.reset_position()
                     start_pressed = False
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                    blue_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
 
-        if start_pressed and pink_ghost.path:
-            pink_ghost.move_step()
+        if start_pressed:
+            if pink_ghost.path:
+                pink_ghost.move_step()
+            if blue_ghost.path:
+                blue_ghost.move_step()
 
         pygame.display.update()
         clock.tick(FPS)
