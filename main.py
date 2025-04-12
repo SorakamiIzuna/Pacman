@@ -29,12 +29,12 @@ orange_ghost = OrangeGhost()
 FPS = 10
 start_pressed = False
 #tránh spawn trùng nhau
-def prevent_ghost_collisions(ghosts):
-    occupied_positions = set()
-    for ghost in ghosts:
-        while (ghost.x, ghost.y) in occupied_positions:
-            ghost.reset_position()
-        occupied_positions.add((ghost.x, ghost.y))
+# def prevent_ghost_collisions(ghosts):
+#     occupied_positions = set()
+#     for ghost in ghosts:
+#         while (ghost.x, ghost.y) in occupied_positions:
+#             ghost.reset_position()
+#         occupied_positions.add((ghost.x, ghost.y))
 
 def draw_buttons():
     reset_button = pygame.Rect(10, SCREEN_HEIGHT - 35, 80, 30)
@@ -73,7 +73,7 @@ def game_loop():
                     pink_ghost.reset_position()
                     blue_ghost.reset_position()
                     orange_ghost.reset_position()
-                    prevent_ghost_collisions([pink_ghost, orange_ghost])
+                    #prevent_ghost_collisions([pink_ghost, orange_ghost])
                     start_pressed = False
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
@@ -86,7 +86,8 @@ def game_loop():
                 pink_ghost.move_step()
             if blue_ghost.path:
                 blue_ghost.move_step()
-            
+            if orange_ghost.path:
+                orange_ghost.move_step()
 
         pygame.display.update()
         clock.tick(FPS)
