@@ -1,32 +1,48 @@
 import pygame
 import sys
-from maze import draw_maze, TILE_SIZE
+from maze import draw_maze, TILE_SIZE, MAZE_LAYOUT
 from entities.pacman import Pacman
 from entities.pinkGhost import PinkGhost
 from entities.blueGhost import BlueGhost
+from entities.orangeGhost import OrangeGhost
 
+# Khởi tạo Pygame
 pygame.init()
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
+
+# Tính kích thước màn hình dựa trên kích thước mê cung
+ROWS = len(MAZE_LAYOUT)
+COLS = len(MAZE_LAYOUT[0])
+SCREEN_WIDTH = COLS * TILE_SIZE
+SCREEN_HEIGHT = ROWS * TILE_SIZE + 40  # Thêm vùng nút điều khiển
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Pac-Man with Pink and Blue Ghosts")
+pygame.display.set_caption("Pac-Man with Pink, Blue, Orange Ghost")
 clock = pygame.time.Clock()
 FONT = pygame.font.SysFont(None, 24)
 
+# Khởi tạo đối tượng
 pacman = Pacman()
 pink_ghost = PinkGhost()
 blue_ghost = BlueGhost()
+orange_ghost = OrangeGhost()
 
 FPS = 10
 start_pressed = False
+#tránh spawn trùng nhau
+def prevent_ghost_collisions(ghosts):
+    occupied_positions = set()
+    for ghost in ghosts:
+        while (ghost.x, ghost.y) in occupied_positions:
+            ghost.reset_position()
+        occupied_positions.add((ghost.x, ghost.y))
 
 def draw_buttons():
-    reset_button = pygame.Rect(10, 560, 80, 30)
-    start_button = pygame.Rect(100, 560, 80, 30)
+    reset_button = pygame.Rect(10, SCREEN_HEIGHT - 35, 80, 30)
+    start_button = pygame.Rect(100, SCREEN_HEIGHT - 35, 80, 30)
     pygame.draw.rect(screen, (200, 200, 200), reset_button)
     pygame.draw.rect(screen, (0, 255, 0), start_button)
-    screen.blit(FONT.render("Reset", True, (0, 0, 0)), (20, 565))
-    screen.blit(FONT.render("Start", True, (0, 0, 0)), (115, 565))
+    screen.blit(FONT.render("Reset", True, (0, 0, 0)), (20, SCREEN_HEIGHT - 30))
+    screen.blit(FONT.render("Start", True, (0, 0, 0)), (115, SCREEN_HEIGHT - 30))
     return reset_button, start_button
 
 def game_loop():
@@ -34,13 +50,20 @@ def game_loop():
     running = True
     while running:
         screen.fill((0, 0, 0))
+
+        # Vẽ mê cung
         draw_maze(screen)
+
+        # Vẽ Pacman và Ghost
         pacman.draw(screen, TILE_SIZE)
         pink_ghost.draw(screen, TILE_SIZE)
+        orange_ghost.draw(screen, TILE_SIZE)
         blue_ghost.draw(screen, TILE_SIZE)
 
+        # Vẽ nút bấm
         reset_btn, start_btn = draw_buttons()
 
+        # Xử lý sự kiện
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -49,10 +72,13 @@ def game_loop():
                     pacman.reset_position()
                     pink_ghost.reset_position()
                     blue_ghost.reset_position()
+                    orange_ghost.reset_position()
+                    prevent_ghost_collisions([pink_ghost, orange_ghost])
                     start_pressed = False
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     blue_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                    orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
 
         if start_pressed:
@@ -60,6 +86,7 @@ def game_loop():
                 pink_ghost.move_step()
             if blue_ghost.path:
                 blue_ghost.move_step()
+            
 
         pygame.display.update()
         clock.tick(FPS)
