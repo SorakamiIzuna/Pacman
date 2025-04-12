@@ -2,11 +2,12 @@ import random
 from maze import MAZE_LAYOUT
 
 class PinkGhost:
-    def __init__(self):
-        self.x, self.y = self.get_random_position()
+    def __init__(self, pacman_pos):
+        self.x, self.y = self.get_random_position(pacman_pos)
+        self.start_position = (self.x, self.y)
         self.path = []
 
-    def get_random_position(self):
+    def get_random_position(self, pacman_pos):
         empty_cells = []
         restricted_rows = {10, 11, 12, 16, 17, 18}
         restricted_cols_start = set(range(5))
@@ -18,14 +19,22 @@ class PinkGhost:
                     if row_index in restricted_rows:
                         if col_index in restricted_cols_start or col_index in restricted_cols_end:
                             continue
-                    empty_cells.append((col_index, row_index))
-        return random.choice(empty_cells)
+                    if (col_index, row_index) != pacman_pos:
+                        empty_cells.append((col_index, row_index))
+        return random.choice(empty_cells) if empty_cells else (0, 0)  
 
-    def reset_position(self):
-        self.x, self.y = self.get_random_position()
+    def reset_position(self, pacman_pos):
+        self.x, self.y = self.get_random_position(pacman_pos)
+        self.start_position = (self.x, self.y)
         self.path = []
 
-    def find_path_to_pacman(self, target_x, target_y):
+    def restore_start_position(self):
+        self.x, self.y = self.start_position
+        self.path = []
+
+    def find_path_to_pacman(self, target_x, target_y, forbidden_cells=None):
+        if forbidden_cells is None:
+            forbidden_cells = set()
         visited = set()
         path = []
 
@@ -33,32 +42,31 @@ class PinkGhost:
             if (x, y) == (target_x, target_y):
                 path.append((x, y))
                 return True
-            if (x, y) in visited or not self.is_valid(x, y):
+            if (x, y) in visited or not self.is_valid(x, y) or ((x, y) in forbidden_cells and (x, y) != (target_x, target_y)):
                 return False
-            
             visited.add((x, y))
-
             directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-
             if y == 14:
                 if x == 0:
                     directions.append((-1, 0))
                 if x == 27:
-                    directions.append((1, 0)) 
+                    directions.append((1, 0))
             for dx, dy in directions:
                 next_x, next_y = x + dx, y + dy
                 if y == 14:
                     if x == 0 and dx == -1:
                         next_x = 27
                     elif x == 27 and dx == 1:
-                        next_x = 0 
+                        next_x = 0
                 if dfs(next_x, next_y):
                     path.append((x, y))
                     return True
             return False
 
         if dfs(self.x, self.y):
-            self.path = path[::-1] 
+            self.path = path[::-1]
+        else:
+            self.path = []
 
     def is_valid(self, x, y):
         if y == 14 and (x == -1 or x == 28):
@@ -71,9 +79,9 @@ class PinkGhost:
             next_x, next_y = self.path[0]
             if next_y == 14:
                 if next_x == -1:
-                    next_x = 27  
+                    next_x = 27
                 elif next_x == 28:
-                    next_x = 0  
+                    next_x = 0
             self.x, self.y = next_x, next_y
 
     def draw(self, screen, tile_size):

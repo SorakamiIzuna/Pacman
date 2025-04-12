@@ -1,6 +1,5 @@
 import pygame
 
-# Màu sắc
 WALL_COLOR = (0, 0, 255)
 TILE_SIZE = 24
 
@@ -38,8 +37,6 @@ MAZE_LAYOUT = [
     "1111111111111111111111111111", #31
 ]
 
-
-# Giữ nguyên hàm draw_maze
 def draw_maze(screen):
     """Vẽ mê cung lên màn hình dựa trên MAZE_LAYOUT."""
     for row_index, row in enumerate(MAZE_LAYOUT):

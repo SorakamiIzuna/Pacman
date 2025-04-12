@@ -3,11 +3,12 @@ import random
 from maze import MAZE_LAYOUT
 
 class OrangeGhost:
-    def __init__(self):
-        self.x, self.y = self.get_random_position()
+    def __init__(self, pacman_pos):
+        self.x, self.y = self.get_random_position(pacman_pos)
+        self.start_position = (self.x, self.y)
         self.path = []
 
-    def get_random_position(self):
+    def get_random_position(self, pacman_pos):
         empty_cells = []
         restricted_rows = {10, 11, 12, 16, 17, 18}
         restricted_cols_start = set(range(5))
@@ -15,15 +16,21 @@ class OrangeGhost:
 
         for row_index, row in enumerate(MAZE_LAYOUT):
             for col_index, cell in enumerate(row):
-                if cell == '0': 
+                if cell == '0':
                     if row_index in restricted_rows:
                         if col_index in restricted_cols_start or col_index in restricted_cols_end:
-                            continue  
-                    empty_cells.append((col_index, row_index))
-        return random.choice(empty_cells)
+                            continue
+                    if (col_index, row_index) != pacman_pos:
+                        empty_cells.append((col_index, row_index))
+        return random.choice(empty_cells) if empty_cells else (0, 0)
 
-    def reset_position(self):
-        self.x, self.y = self.get_random_position()
+    def reset_position(self, pacman_pos):
+        self.x, self.y = self.get_random_position(pacman_pos)
+        self.start_position = (self.x, self.y)
+        self.path = []
+
+    def restore_start_position(self):
+        self.x, self.y = self.start_position
         self.path = []
 
     def find_path_to_pacman(self, target_x, target_y):
