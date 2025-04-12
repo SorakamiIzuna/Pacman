@@ -5,12 +5,14 @@ class Pacman:
     def __init__(self):
         self.initial_position = self.find_fixed_position()
         self.x, self.y = self.initial_position
+        self.speed = 1
 
     def find_fixed_position(self):
         for row_index, row in enumerate(MAZE_LAYOUT):
             for col_index, cell in enumerate(row):
                 if cell == '0':
                     return col_index, row_index
+        return 0, 0
 
     def reset_position(self):
         self.x, self.y = self.initial_position
@@ -18,3 +20,24 @@ class Pacman:
     def draw(self, screen, tile_size):
         import pygame
         pygame.draw.circle(screen, (255, 255, 0), ((self.x + 0.5) * tile_size, (self.y + 0.5) * tile_size), tile_size // 2)
+
+    def move(self, direction):
+        self.direction = direction
+
+        if self.direction == "UP":
+            if self.is_valid_move(self.x, self.y - self.speed):
+                self.y -= self.speed
+        elif self.direction == "DOWN":
+            if self.is_valid_move(self.x, self.y + self.speed):
+                self.y += self.speed
+        elif self.direction == "LEFT":
+            if self.is_valid_move(self.x - self.speed, self.y):
+                self.x -= self.speed
+        elif self.direction == "RIGHT":
+            if self.is_valid_move(self.x + self.speed, self.y):
+                self.x += self.speed
+
+    def is_valid_move(self, x, y):
+        if 0 <= x < len(MAZE_LAYOUT[0]) and 0 <= y < len(MAZE_LAYOUT):
+            return MAZE_LAYOUT[y][x] == '0'
+        return False

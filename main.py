@@ -28,13 +28,6 @@ orange_ghost = OrangeGhost()
 
 FPS = 10
 start_pressed = False
-#tránh spawn trùng nhau
-# def prevent_ghost_collisions(ghosts):
-#     occupied_positions = set()
-#     for ghost in ghosts:
-#         while (ghost.x, ghost.y) in occupied_positions:
-#             ghost.reset_position()
-#         occupied_positions.add((ghost.x, ghost.y))
 
 def draw_buttons():
     reset_button = pygame.Rect(10, SCREEN_HEIGHT - 35, 80, 30)
@@ -54,6 +47,17 @@ def game_loop():
         # Vẽ mê cung
         draw_maze(screen)
 
+        # Xử lý sự kiện bàn phím để di chuyển Pacman
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            pacman.move("UP")
+        if keys[pygame.K_DOWN]:
+            pacman.move("DOWN")
+        if keys[pygame.K_LEFT]:
+            pacman.move("LEFT")
+        if keys[pygame.K_RIGHT]:
+            pacman.move("RIGHT")
+
         # Vẽ Pacman và Ghost
         pacman.draw(screen, TILE_SIZE)
         pink_ghost.draw(screen, TILE_SIZE)
@@ -63,7 +67,7 @@ def game_loop():
         # Vẽ nút bấm
         reset_btn, start_btn = draw_buttons()
 
-        # Xử lý sự kiện
+        # Xử lý sự kiện chuột
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -73,7 +77,6 @@ def game_loop():
                     pink_ghost.reset_position()
                     blue_ghost.reset_position()
                     orange_ghost.reset_position()
-                    #prevent_ghost_collisions([pink_ghost, orange_ghost])
                     start_pressed = False
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
@@ -81,6 +84,7 @@ def game_loop():
                     orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
 
+        # Di chuyển ma (nếu đã bắt đầu)
         if start_pressed:
             if pink_ghost.path:
                 pink_ghost.move_step()
