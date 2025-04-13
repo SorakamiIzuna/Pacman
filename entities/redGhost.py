@@ -1,12 +1,12 @@
 import heapq
 import random
 import pygame
-from maze import MAZE_LAYOUT
+from maze import MAZE_LAYOUT,TILE_SIZE
 
 class RedGhost:
     def __init__(self):
         self.image = pygame.image.load("assets/red.png")
-        self.image = pygame.transform.scale(self.image, (24, 24))
+        self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.x, self.y = self.get_random_position()
         self.path = []
 

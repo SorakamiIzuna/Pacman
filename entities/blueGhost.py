@@ -1,12 +1,12 @@
 import random
 from collections import deque
 import pygame
-from maze import MAZE_LAYOUT
+from maze import MAZE_LAYOUT, TILE_SIZE
 
 class BlueGhost:
     def __init__(self):
         self.image = pygame.image.load("assets/blue.png")
-        self.image = pygame.transform.scale(self.image, (24, 24))
+        self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.x, self.y = self.get_random_position()
         self.path = []
 
