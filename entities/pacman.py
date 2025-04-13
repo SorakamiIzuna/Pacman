@@ -1,8 +1,11 @@
 import random
+import pygame
 from maze import MAZE_LAYOUT
 
 class Pacman:
     def __init__(self):
+        self.image = pygame.image.load("assets/pacman.png")
+        self.image = pygame.transform.scale(self.image, (24, 24))
         self.initial_position = self.find_fixed_position()
         self.x, self.y = self.initial_position
         self.speed = 1
@@ -18,9 +21,7 @@ class Pacman:
         self.x, self.y = self.initial_position
 
     def draw(self, screen, tile_size):
-        import pygame
-        pygame.draw.circle(screen, (255, 255, 0), ((self.x + 0.5) * tile_size, (self.y + 0.5) * tile_size), tile_size // 2)
-
+        screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
     def move(self, direction):
         self.direction = direction
 
