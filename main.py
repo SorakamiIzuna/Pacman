@@ -5,7 +5,7 @@ from entities.pacman import Pacman
 from entities.pinkGhost import PinkGhost
 from entities.blueGhost import BlueGhost
 from entities.orangeGhost import OrangeGhost
-
+from entities.redGhost import RedGhost
 # Khởi tạo Pygame
 pygame.init()
 
@@ -25,7 +25,7 @@ pacman = Pacman()
 pink_ghost = PinkGhost()
 blue_ghost = BlueGhost()
 orange_ghost = OrangeGhost()
-
+red_ghost = RedGhost()
 FPS = 10
 start_pressed = False
 
@@ -63,7 +63,7 @@ def game_loop():
         pink_ghost.draw(screen, TILE_SIZE)
         orange_ghost.draw(screen, TILE_SIZE)
         blue_ghost.draw(screen, TILE_SIZE)
-
+        red_ghost.draw(screen,TILE_SIZE)
         # Vẽ nút bấm
         reset_btn, start_btn = draw_buttons()
 
@@ -77,11 +77,13 @@ def game_loop():
                     pink_ghost.reset_position()
                     blue_ghost.reset_position()
                     orange_ghost.reset_position()
+                    red_ghost.reset_position()
                     start_pressed = False
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     blue_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                    red_ghost.find_path_to_pacman(pacman.x,pacman.y)
                     start_pressed = True
 
         # Di chuyển ma (nếu đã bắt đầu)
@@ -92,6 +94,8 @@ def game_loop():
                 blue_ghost.move_step()
             if orange_ghost.path:
                 orange_ghost.move_step()
+            if red_ghost.path:
+                red_ghost.move_step()
 
         pygame.display.update()
         clock.tick(FPS)

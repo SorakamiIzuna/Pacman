@@ -3,9 +3,9 @@ import random
 import pygame
 from maze import MAZE_LAYOUT
 
-class OrangeGhost:
+class RedGhost:
     def __init__(self):
-        self.image = pygame.image.load("assets/orange.png")
+        self.image = pygame.image.load("assets/red.png")
         self.image = pygame.transform.scale(self.image, (24, 24))
         self.x, self.y = self.get_random_position()
         self.path = []
@@ -24,11 +24,12 @@ class OrangeGhost:
 
     def find_path_to_pacman(self, target_x, target_y):
         frontier = []
-        heapq.heappush(frontier, (0, (self.x, self.y), []))
+        start = (self.x, self.y)
+        heapq.heappush(frontier, (0, 0, start, []))
         visited = set()
 
         while frontier:
-            cost, (x, y), path = heapq.heappop(frontier)
+            priority, cost, (x, y), path = heapq.heappop(frontier)
 
             if (x, y) in visited:
                 continue
@@ -42,7 +43,9 @@ class OrangeGhost:
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 nx, ny = x + dx, y + dy
                 if self.is_valid(nx, ny) and (nx, ny) not in visited:
-                    heapq.heappush(frontier, (cost + 1, (nx, ny), new_path))
+                    new_cost = cost + 1
+                    heuristic = abs(target_x - nx) + abs(target_y - ny)
+                    heapq.heappush(frontier, (new_cost + heuristic, new_cost, (nx, ny), new_path))
 
         self.path = []
 
@@ -54,7 +57,8 @@ class OrangeGhost:
             self.path.pop(0)
             self.x, self.y = self.path[0]
 
-    def draw(self, screen, tile_size):
+    def draw(self, screen, tile_size, show_path=False):
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
-        for px, py in self.path[1:]:
-            pygame.draw.rect(screen, (255, 215, 0), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
+        if show_path:
+            for px, py in self.path[1:]:
+                pygame.draw.rect(screen, (255, 100, 100), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
