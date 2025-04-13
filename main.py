@@ -6,6 +6,7 @@ from entities.pinkGhost import PinkGhost
 from entities.blueGhost import BlueGhost
 from entities.orangeGhost import OrangeGhost
 from entities.redGhost import RedGhost
+
 pygame.init()
 
 ROWS = len(MAZE_LAYOUT)
@@ -20,12 +21,12 @@ FONT = pygame.font.SysFont(None, 24)
 wall = pygame.image.load("assets/pixel-wall.png").convert_alpha()
 wall_image = pygame.transform.scale(wall, (TILE_SIZE, TILE_SIZE))
 
-
 pacman = Pacman()
 pink_ghost = PinkGhost(pacman_pos=(pacman.x, pacman.y))
 blue_ghost = BlueGhost(pacman_pos=(pacman.x, pacman.y))
 orange_ghost = OrangeGhost(pacman_pos=(pacman.x, pacman.y))
 red_ghost = RedGhost(pacman_pos=(pacman.x, pacman.y))
+
 FPS = 10
 start_pressed = False
 
@@ -46,7 +47,6 @@ def game_loop():
     running = True
     while running:
         screen.fill((0, 0, 0))
-
         draw_maze(screen, wall_image)
 
         keys = pygame.key.get_pressed()
@@ -63,7 +63,8 @@ def game_loop():
         pink_ghost.draw(screen, TILE_SIZE)
         orange_ghost.draw(screen, TILE_SIZE)
         blue_ghost.draw(screen, TILE_SIZE)
-        red_ghost.draw(screen,TILE_SIZE)
+        red_ghost.draw(screen, TILE_SIZE)
+
         new_random_btn, reset_btn, start_btn = draw_buttons()
 
         for event in pygame.event.get():
@@ -87,7 +88,7 @@ def game_loop():
                     pink_ghost.start_position = (pink_ghost.x, pink_ghost.y)
                     blue_ghost.start_position = (blue_ghost.x, blue_ghost.y)
                     orange_ghost.start_position = (orange_ghost.x, orange_ghost.y)
-                    red_ghost.start_position = (red_ghost.x,red_ghost.y)
+                    red_ghost.start_position = (red_ghost.x, red_ghost.y)
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     blue_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
@@ -96,6 +97,8 @@ def game_loop():
 
         if start_pressed:
             old_pink_x, old_pink_y = pink_ghost.x, pink_ghost.y
+            if red_ghost.path:
+                red_ghost.move_step()
             if blue_ghost.path:
                 blue_ghost.move_step()
             if orange_ghost.path:
@@ -103,9 +106,10 @@ def game_loop():
             if pink_ghost.path:
                 pink_ghost.move_step()
                 next_pink_pos = (pink_ghost.x, pink_ghost.y)
+                red_pos = (red_ghost.x, red_ghost.y)
                 blue_pos = (blue_ghost.x, blue_ghost.y)
                 orange_pos = (orange_ghost.x, orange_ghost.y)
-                forbidden_cells = {(blue_pos), (orange_pos)}
+                forbidden_cells = {red_pos, blue_pos, orange_pos}
                 if (pacman.x, pacman.y) in forbidden_cells:
                     forbidden_cells.remove((pacman.x, pacman.y))
                 if next_pink_pos in forbidden_cells:

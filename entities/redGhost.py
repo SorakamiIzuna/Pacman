@@ -66,10 +66,18 @@ class RedGhost:
 
     def get_random_position(self, pacman_pos):
         empty_cells = []
+        restricted_rows = {10, 11, 12, 16, 17, 18}
+        restricted_cols_start = set(range(5))
+        restricted_cols_end = set(range(22, 28))
+
         for row_index, row in enumerate(MAZE_LAYOUT):
             for col_index, cell in enumerate(row):
-                if cell == '0' and (col_index, row_index) != pacman_pos:
-                    empty_cells.append((col_index, row_index))
+                if cell == '0':
+                    if row_index in restricted_rows:
+                        if col_index in restricted_cols_start or col_index in restricted_cols_end:
+                            continue
+                    if (col_index, row_index) != pacman_pos:
+                        empty_cells.append((col_index, row_index))
         return random.choice(empty_cells) if empty_cells else (0, 0)
 
     def reset_position(self, pacman_pos):
