@@ -1,9 +1,12 @@
 import heapq
 import random
+import pygame
 from maze import MAZE_LAYOUT
 
 class RedGhost:
     def __init__(self):
+        self.image = pygame.image.load("assets/red.png")
+        self.image = pygame.transform.scale(self.image, (24, 24))
         self.x, self.y = self.get_random_position()
         self.path = []
 
@@ -22,7 +25,7 @@ class RedGhost:
     def find_path_to_pacman(self, target_x, target_y):
         frontier = []
         start = (self.x, self.y)
-        heapq.heappush(frontier, (0, 0, start, []))  # (priority, cost_so_far, position, path)
+        heapq.heappush(frontier, (0, 0, start, []))
         visited = set()
 
         while frontier:
@@ -55,9 +58,7 @@ class RedGhost:
             self.x, self.y = self.path[0]
 
     def draw(self, screen, tile_size, show_path=False):
-        import pygame
-        pygame.draw.circle(screen, (255, 0, 0), ((self.x + 0.5) * tile_size, (self.y + 0.5) * tile_size), tile_size // 2)
-
+        screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         if show_path:
             for px, py in self.path[1:]:
                 pygame.draw.rect(screen, (255, 100, 100), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
