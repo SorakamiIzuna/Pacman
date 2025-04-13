@@ -1,4 +1,5 @@
 import heapq
+import random
 import pygame
 from maze import MAZE_LAYOUT, TILE_SIZE
 
@@ -12,18 +13,10 @@ class RedGhost:
 
     def get_random_position(self, pacman_pos):
         empty_cells = []
-        restricted_rows = {10, 11, 12, 16, 17, 18}
-        restricted_cols_start = set(range(5))
-        restricted_cols_end = set(range(22, 28))
-
         for row_index, row in enumerate(MAZE_LAYOUT):
             for col_index, cell in enumerate(row):
-                if cell == '0':
-                    if row_index in restricted_rows:
-                        if col_index in restricted_cols_start or col_index in restricted_cols_end:
-                            continue
-                    if (col_index, row_index) != pacman_pos:
-                        empty_cells.append((col_index, row_index))
+                if cell == '0' and (col_index, row_index) != pacman_pos:
+                    empty_cells.append((col_index, row_index))
         return random.choice(empty_cells) if empty_cells else (0, 0)
 
     def reset_position(self, pacman_pos):
@@ -35,70 +28,79 @@ class RedGhost:
         self.x, self.y = self.start_position
         self.path = []
 
-    def a_star(self, start_x, start_y, target_x, target_y, forbidden_cells=None):
+    def heuristic(self, a, b):
+        # Manhattan distance
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    def is_valid(self, x, y):
+        if y == 14 and (x == -1 or x == 28):  # tunnel
+            return True
+        return 0 <= y < len(MAZE_LAYOUT) and 0 <= x < len(MAZE_LAYOUT[0]) and MAZE_LAYOUT[y][x] == '0'
+
+    def find_path_to_pacman(self, target_x, target_y, forbidden_cells=None):
         if forbidden_cells is None:
             forbidden_cells = set()
 
-        open_list = []
-        closed_list = set()
-        came_from = {}
-        g_score = { (start_x, start_y): 0 }
-        f_score = { (start_x, start_y): self.heuristic(start_x, start_y, target_x, target_y) }
+        start = (self.x, self.y)
+        goal = (target_x, target_y)
+        frontier = []
+        heapq.heappush(frontier, (0, start))
+        came_from = {start: None}
+        cost_so_far = {start: 0}
 
-        heapq.heappush(open_list, (f_score[(start_x, start_y)], (start_x, start_y)))
+        while frontier:
+            _, current = heapq.heappop(frontier)
 
-        while open_list:
-            _, current = heapq.heappop(open_list)
-            current_x, current_y = current
+            if current == goal:
+                break
 
-            if current == (target_x, target_y):
-                self.reconstruct_path(came_from, current)
-                return True
+            directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+            x, y = current
+            if y == 14:
+                if x == 0:
+                    directions.append((-1, 0))
+                elif x == 27:
+                    directions.append((1, 0))
 
-            closed_list.add(current)
-
-            for neighbor in self.get_neighbors(current_x, current_y):
-                if neighbor in closed_list or neighbor in forbidden_cells:
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if ny == 14:
+                    if nx == -1:
+                        nx = 27
+                    elif nx == 28:
+                        nx = 0
+                next_pos = (nx, ny)
+                if not self.is_valid(nx, ny) or (next_pos in forbidden_cells and next_pos != goal):
                     continue
 
-                tentative_g_score = g_score.get(current, float('inf')) + 1
+                new_cost = cost_so_far[current] + 1
+                if next_pos not in cost_so_far or new_cost < cost_so_far[next_pos]:
+                    cost_so_far[next_pos] = new_cost
+                    priority = new_cost + self.heuristic(goal, next_pos)
+                    heapq.heappush(frontier, (priority, next_pos))
+                    came_from[next_pos] = current
 
-                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
-                    came_from[neighbor] = current
-                    g_score[neighbor] = tentative_g_score
-                    f_score[neighbor] = tentative_g_score + self.heuristic(neighbor[0], neighbor[1], target_x, target_y)
-
-                    heapq.heappush(open_list, (f_score[neighbor], neighbor))
-
-        return False
-
-    def heuristic(self, x, y, target_x, target_y):
-        return abs(x - target_x) + abs(y - target_y)  # Manhattan distance
-
-    def reconstruct_path(self, came_from, current):
-        path = []
-        while current in came_from:
-            path.append(current)
-            current = came_from[current]
-        path.reverse()
-        self.path = path
-
-    def get_neighbors(self, x, y):
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        neighbors = []
-
-        for dx, dy in directions:
-            next_x, next_y = x + dx, y + dy
-            if 0 <= next_x < len(MAZE_LAYOUT[0]) and 0 <= next_y < len(MAZE_LAYOUT):
-                if MAZE_LAYOUT[next_y][next_x] == '0':  # Check if it's an open space
-                    neighbors.append((next_x, next_y))
-
-        return neighbors
+        if goal in came_from:
+            # Reconstruct path
+            path = []
+            current = goal
+            while current != start:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            self.path = path[::-1]
+        else:
+            self.path = []
 
     def move_step(self):
         if self.path and len(self.path) > 1:
             self.path.pop(0)
             next_x, next_y = self.path[0]
+            if next_y == 14:
+                if next_x == -1:
+                    next_x = 27
+                elif next_x == 28:
+                    next_x = 0
             self.x, self.y = next_x, next_y
 
     def draw(self, screen, tile_size):
