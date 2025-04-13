@@ -5,7 +5,7 @@ from entities.pacman import Pacman
 from entities.pinkGhost import PinkGhost
 from entities.blueGhost import BlueGhost
 from entities.orangeGhost import OrangeGhost
-
+from entities.redGhost import RedGhost
 pygame.init()
 
 ROWS = len(MAZE_LAYOUT)
@@ -25,7 +25,7 @@ pacman = Pacman()
 pink_ghost = PinkGhost(pacman_pos=(pacman.x, pacman.y))
 blue_ghost = BlueGhost(pacman_pos=(pacman.x, pacman.y))
 orange_ghost = OrangeGhost(pacman_pos=(pacman.x, pacman.y))
-
+red_ghost = RedGhost(pacman_pos=(pacman.x, pacman.y))
 FPS = 10
 start_pressed = False
 
@@ -63,7 +63,7 @@ def game_loop():
         pink_ghost.draw(screen, TILE_SIZE)
         orange_ghost.draw(screen, TILE_SIZE)
         blue_ghost.draw(screen, TILE_SIZE)
-
+        red_ghost.draw(screen,TILE_SIZE)
         new_random_btn, reset_btn, start_btn = draw_buttons()
 
         for event in pygame.event.get():
@@ -75,19 +75,23 @@ def game_loop():
                     pink_ghost.reset_position(pacman_pos=(pacman.x, pacman.y))
                     blue_ghost.reset_position(pacman_pos=(pacman.x, pacman.y))
                     orange_ghost.reset_position(pacman_pos=(pacman.x, pacman.y))
+                    red_ghost.reset_position(pacman_pos=(pacman.x, pacman.y))
                     start_pressed = False
                 elif reset_btn.collidepoint(event.pos):
                     pink_ghost.restore_start_position()
                     blue_ghost.restore_start_position()
                     orange_ghost.restore_start_position()
+                    red_ghost.restore_start_position()
                     start_pressed = False
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.start_position = (pink_ghost.x, pink_ghost.y)
                     blue_ghost.start_position = (blue_ghost.x, blue_ghost.y)
                     orange_ghost.start_position = (orange_ghost.x, orange_ghost.y)
+                    red_ghost.start_position = (red_ghost.x,red_ghost.y)
                     pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     blue_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                    red_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
 
         if start_pressed:
