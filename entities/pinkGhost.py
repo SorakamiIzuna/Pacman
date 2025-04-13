@@ -1,8 +1,11 @@
 import random
+import pygame
 from maze import MAZE_LAYOUT
 
 class PinkGhost:
     def __init__(self):
+        self.image = pygame.image.load("assets/pink.png")
+        self.image = pygame.transform.scale(self.image, (24, 24))
         self.x, self.y = self.get_random_position()
         self.path = []
 
@@ -47,8 +50,6 @@ class PinkGhost:
             self.x, self.y = self.path[0]
 
     def draw(self, screen, tile_size):
-        import pygame
-        pygame.draw.circle(screen, (255, 105, 180), ((self.x + 0.5) * tile_size, (self.y + 0.5) * tile_size), tile_size // 2)
-
+        screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         for px, py in self.path[1:]:
             pygame.draw.rect(screen, (255, 182, 193), (px * tile_size, py * tile_size, tile_size, tile_size), 1)

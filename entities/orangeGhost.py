@@ -1,5 +1,6 @@
 import heapq
 import random
+import pygame
 from maze import MAZE_LAYOUT
 
 class OrangeGhost:
