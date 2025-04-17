@@ -1,7 +1,7 @@
 import random
 from collections import deque
 import pygame
-from maze import MAZE_LAYOUT,TILE_SIZE
+from maze import MAZE_LAYOUT, TILE_SIZE
 
 class BlueGhost:
     def __init__(self, pacman_pos):
@@ -36,7 +36,9 @@ class BlueGhost:
         self.x, self.y = self.start_position
         self.path = []
 
-    def find_path_to_pacman(self, target_x, target_y):
+    def find_path_to_pacman(self, target_x, target_y, forbidden_cells=None):
+        if forbidden_cells is None:
+            forbidden_cells = set()
         visited = set()
         parent_map = {}
         queue = deque([(self.x, self.y)])
@@ -68,7 +70,9 @@ class BlueGhost:
                         next_x = 27
                     elif current_x == 27 and dx == 1:
                         next_x = 0
-                if self.is_valid(next_x, next_y) and (next_x, next_y) not in visited:
+                if (self.is_valid(next_x, next_y) and 
+                    (next_x, next_y) not in visited and 
+                    ((next_x, next_y) not in forbidden_cells or (next_x, next_y) == (target_x, target_y))):
                     visited.add((next_x, next_y))
                     parent_map[(next_x, next_y)] = (current_x, current_y)
                     queue.append((next_x, next_y))

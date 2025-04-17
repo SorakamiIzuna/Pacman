@@ -1,7 +1,7 @@
-import heapq
 import random
+import heapq
 import pygame
-from maze import MAZE_LAYOUT,TILE_SIZE
+from maze import MAZE_LAYOUT, TILE_SIZE
 
 class OrangeGhost:
     def __init__(self, pacman_pos):
@@ -36,7 +36,9 @@ class OrangeGhost:
         self.x, self.y = self.start_position
         self.path = []
 
-    def find_path_to_pacman(self, target_x, target_y):
+    def find_path_to_pacman(self, target_x, target_y, forbidden_cells=None):
+        if forbidden_cells is None:
+            forbidden_cells = set()
         frontier = []
         heapq.heappush(frontier, (0, (self.x, self.y), []))
         visited = set()
@@ -67,7 +69,9 @@ class OrangeGhost:
                         nx = 27
                     elif x == 27 and dx == 1:
                         nx = 0
-                if self.is_valid(nx, ny) and (nx, ny) not in visited:
+                if (self.is_valid(nx, ny) and 
+                    (nx, ny) not in visited and 
+                    ((nx, ny) not in forbidden_cells or (nx, ny) == (target_x, target_y))):
                     heapq.heappush(frontier, (cost + 1, (nx, ny), new_path))
 
         self.path = []

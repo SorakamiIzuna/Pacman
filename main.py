@@ -12,7 +12,7 @@ pygame.init()
 ROWS = len(MAZE_LAYOUT)
 COLS = len(MAZE_LAYOUT[0])
 SCREEN_WIDTH = COLS * TILE_SIZE
-SCREEN_HEIGHT = ROWS * TILE_SIZE + 40
+SCREEN_HEIGHT = ROWS * TILE_SIZE 
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pac-Man")
@@ -96,25 +96,49 @@ def game_loop():
                     start_pressed = True
 
         if start_pressed:
-            old_pink_x, old_pink_y = pink_ghost.x, pink_ghost.y
-            if red_ghost.path:
-                red_ghost.move_step()
-            if blue_ghost.path:
-                blue_ghost.move_step()
-            if orange_ghost.path:
-                orange_ghost.move_step()
-            if pink_ghost.path:
-                pink_ghost.move_step()
-                next_pink_pos = (pink_ghost.x, pink_ghost.y)
-                red_pos = (red_ghost.x, red_ghost.y)
-                blue_pos = (blue_ghost.x, blue_ghost.y)
-                orange_pos = (orange_ghost.x, orange_ghost.y)
-                forbidden_cells = {red_pos, blue_pos, orange_pos}
-                if (pacman.x, pacman.y) in forbidden_cells:
-                    forbidden_cells.remove((pacman.x, pacman.y))
-                if next_pink_pos in forbidden_cells:
-                    pink_ghost.x, pink_ghost.y = old_pink_x, old_pink_y
-                    pink_ghost.find_path_to_pacman(pacman.x, pacman.y, forbidden_cells)
+            old_red_pos = (red_ghost.x, red_ghost.y)
+            old_blue_pos = (blue_ghost.x, blue_ghost.y)
+            old_orange_pos = (orange_ghost.x, orange_ghost.y)
+            old_pink_pos = (pink_ghost.x, pink_ghost.y)
+
+            next_positions = {}
+            ghosts = [
+                (red_ghost, 'red', 0),
+                (blue_ghost, 'blue', 1),
+                (orange_ghost, 'orange', 2),
+                (pink_ghost, 'pink', 3)
+            ]
+            for ghost, name, _ in ghosts:
+                if ghost.path and len(ghost.path) > 1:
+                    ghost.move_step()
+                    next_pos = (ghost.x, ghost.y)
+                    next_positions[name] = next_pos
+                else:
+                    next_positions[name] = (ghost.x, ghost.y)
+
+            pos_count = {}
+            for name, pos in next_positions.items():
+                pos_count[pos] = pos_count.get(pos, []) + [(name, ghosts[[g[1] for g in ghosts].index(name)][0])]
+
+            for pos, ghost_list in pos_count.items():
+                if len(ghost_list) > 1 and pos != (pacman.x, pacman.y):
+                    ghost_list.sort(key=lambda x: [g[2] for g in ghosts if g[1] == x[0]][0])
+                    winner_name, winner_ghost = ghost_list[0]
+                    for loser_name, loser_ghost in ghost_list[1:]:
+                        if loser_name == 'red':
+                            red_ghost.x, red_ghost.y = old_red_pos
+                        elif loser_name == 'blue':
+                            blue_ghost.x, blue_ghost.y = old_blue_pos
+                        elif loser_name == 'orange':
+                            orange_ghost.x, orange_ghost.y = old_orange_pos
+                        elif loser_name == 'pink':
+                            pink_ghost.x, pink_ghost.y = old_pink_pos
+                        forbidden_cells = {next_positions[winner_name]}
+                        loser_ghost.find_path_to_pacman(pacman.x, pacman.y, forbidden_cells)
+                elif pos == (pacman.x, pacman.y):
+                    pass
+                else:
+                    pass
 
         pygame.display.update()
         clock.tick(FPS)
