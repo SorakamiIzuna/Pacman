@@ -1,6 +1,6 @@
 import random
 import pygame
-from maze import MAZE_LAYOUT, TILE_SIZE
+from maze import MAZE_LAYOUT,TILE_SIZE
 
 class Pacman:
     def __init__(self):
@@ -22,23 +22,30 @@ class Pacman:
 
     def draw(self, screen, tile_size):
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
+
     def move(self, direction):
         self.direction = direction
+        next_x, next_y = self.x, self.y
 
         if self.direction == "UP":
-            if self.is_valid_move(self.x, self.y - self.speed):
-                self.y -= self.speed
+            next_y -= self.speed
         elif self.direction == "DOWN":
-            if self.is_valid_move(self.x, self.y + self.speed):
-                self.y += self.speed
+            next_y += self.speed
         elif self.direction == "LEFT":
-            if self.is_valid_move(self.x - self.speed, self.y):
-                self.x -= self.speed
+            next_x -= self.speed
         elif self.direction == "RIGHT":
-            if self.is_valid_move(self.x + self.speed, self.y):
-                self.x += self.speed
+            next_x += self.speed
+
+        if next_y == 14:
+            if next_x == -1:
+                next_x = 27
+            elif next_x == 28:
+                next_x = 0
+
+        if self.is_valid_move(next_x, next_y):
+            self.x, self.y = next_x, next_y
 
     def is_valid_move(self, x, y):
-        if 0 <= x < len(MAZE_LAYOUT[0]) and 0 <= y < len(MAZE_LAYOUT):
-            return MAZE_LAYOUT[y][x] == '0'
-        return False
+        if y == 14 and (x == -1 or x == 28):
+            return True
+        return 0 <= y < len(MAZE_LAYOUT) and 0 <= x < len(MAZE_LAYOUT[0]) and MAZE_LAYOUT[y][x] == '0'
