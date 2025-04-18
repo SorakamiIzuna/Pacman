@@ -45,8 +45,16 @@ def draw_buttons():
     screen.blit(FONT.render("Start", True, (0, 0, 0)), (SCREEN_WIDTH - 81, SCREEN_HEIGHT - 30))
     return new_random_button, reset_button, start_button
 
+def check_endgame(pacman, ghosts_list):
+    for ghost, _, _ in ghosts_list:
+        if (ghost.x, ghost.y) == (pacman.x, pacman.y):
+            return True
+    return False
+
 def game_loop():
     global start_pressed, old_pacman_pos, last_path_update_time
+    ghost_move_counter = 0
+    GHOST_MOVE_DELAY = 3
     running = True
     while running:
         screen.fill((0, 0, 0))
@@ -125,12 +133,21 @@ def game_loop():
                 (orange_ghost, 'orange', 2),
                 (pink_ghost, 'pink', 3)
             ]
-            for ghost, name, _ in ghosts:
-                if ghost.path and len(ghost.path) > 1:
-                    ghost.move_step()
-                    next_pos = (ghost.x, ghost.y)
-                    next_positions[name] = next_pos
-                else:
+
+            ghost_move_counter += 1
+            if ghost_move_counter >= GHOST_MOVE_DELAY:
+                ghost_move_counter = 0  # Reset counter sau mỗi lần di chuyển
+
+                for ghost, name, _ in ghosts:
+                    if ghost.path and len(ghost.path) > 1:
+                        ghost.move_step()
+                        next_pos = (ghost.x, ghost.y)
+                        next_positions[name] = next_pos
+                    else:
+                        next_positions[name] = (ghost.x, ghost.y)
+            else:
+                # Nếu chưa tới lượt move, vẫn cần lưu vị trí hiện tại
+                for ghost, name, _ in ghosts:
                     next_positions[name] = (ghost.x, ghost.y)
 
             pos_count = {}
@@ -156,6 +173,17 @@ def game_loop():
                     pass
                 else:
                     pass
+
+            if check_endgame(pacman, ghosts):
+                game_over_font = pygame.font.SysFont(None, 72)
+                text_surface = game_over_font.render("GAME OVER!", True, (255, 0, 0))
+                text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+                screen.blit(text_surface, text_rect)
+                pygame.display.update()
+
+                print("Game Over! End game!")
+                pygame.time.delay(2000)
+                running = False
 
         pygame.display.update()
         clock.tick(FPS)
