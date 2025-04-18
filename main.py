@@ -12,7 +12,7 @@ pygame.init()
 ROWS = len(MAZE_LAYOUT)
 COLS = len(MAZE_LAYOUT[0])
 SCREEN_WIDTH = COLS * TILE_SIZE
-SCREEN_HEIGHT = ROWS * TILE_SIZE 
+SCREEN_HEIGHT = ROWS * TILE_SIZE
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pac-Man")
@@ -29,6 +29,9 @@ red_ghost = RedGhost(pacman_pos=(pacman.x, pacman.y))
 
 FPS = 10
 start_pressed = False
+old_pacman_pos = (pacman.x, pacman.y)
+last_path_update_time = 0
+UPDATE_INTERVAL = 500
 
 def draw_buttons():
     new_random_button = pygame.Rect(10, SCREEN_HEIGHT - 35, 195, 30)
@@ -43,7 +46,7 @@ def draw_buttons():
     return new_random_button, reset_button, start_button
 
 def game_loop():
-    global start_pressed
+    global start_pressed, old_pacman_pos, last_path_update_time
     running = True
     while running:
         screen.fill((0, 0, 0))
@@ -78,12 +81,14 @@ def game_loop():
                     orange_ghost.reset_position(pacman_pos=(pacman.x, pacman.y))
                     red_ghost.reset_position(pacman_pos=(pacman.x, pacman.y))
                     start_pressed = False
+                    old_pacman_pos = (pacman.x, pacman.y)
                 elif reset_btn.collidepoint(event.pos):
                     pink_ghost.restore_start_position()
                     blue_ghost.restore_start_position()
                     orange_ghost.restore_start_position()
                     red_ghost.restore_start_position()
                     start_pressed = False
+                    old_pacman_pos = (pacman.x, pacman.y)
                 elif start_btn.collidepoint(event.pos):
                     pink_ghost.start_position = (pink_ghost.x, pink_ghost.y)
                     blue_ghost.start_position = (blue_ghost.x, blue_ghost.y)
@@ -94,8 +99,20 @@ def game_loop():
                     orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     red_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
+                    old_pacman_pos = (pacman.x, pacman.y)
 
         if start_pressed:
+            current_time = pygame.time.get_ticks()
+            pacman_moved = (pacman.x, pacman.y) != old_pacman_pos
+            #if pacman_moved and current_time - last_path_update_time >= UPDATE_INTERVAL:
+            if pacman_moved:
+                pink_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                blue_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                orange_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                red_ghost.find_path_to_pacman(pacman.x, pacman.y)
+                last_path_update_time = current_time
+            old_pacman_pos = (pacman.x, pacman.y)
+
             old_red_pos = (red_ghost.x, red_ghost.y)
             old_blue_pos = (blue_ghost.x, blue_ghost.y)
             old_orange_pos = (orange_ghost.x, orange_ghost.y)
