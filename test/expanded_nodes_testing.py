@@ -79,3 +79,5 @@ plt.ylabel('Node')
 plt.title('Average Nodes Expanded per Search')
 plt.tight_layout()
 plt.show()
+
+print(blueNodes)

@@ -30,6 +30,7 @@ def measureTimeEachGhost(ghost, target_x, target_y):
         orangeTime.append(search_time)
     return search_time
 def timeMeasure(rounds):
+    pacman=Pacman()
     for i in range(rounds):
         pacman=Pacman()
 
