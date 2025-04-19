@@ -52,7 +52,7 @@ plt.plot(rounds, pinkTime, label='DFS', color='purple')
 # Labels, title, legend
 plt.xlabel('Rounds')
 plt.ylabel('Time (s)')
-plt.title('Time per Round by Color')
+plt.title('Time per Round')
 plt.legend()
 
 plt.grid(True)
@@ -69,7 +69,7 @@ means = [
 ]
 
 # Labels
-labels = ['UCS', 'BFS', 'DFS', 'Pink']
+labels = ['UCS', 'BFS', 'A*', 'DFS']
 
 # Plot as bar chart
 plt.bar(labels, means, color=['orange', 'blue', 'red', 'pink'], alpha=0.7)
