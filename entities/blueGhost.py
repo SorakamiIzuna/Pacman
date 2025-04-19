@@ -103,3 +103,5 @@ class BlueGhost:
             pygame.draw.rect(screen, (173, 216, 230), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
     def getNodes(self):
         return self.nodes
+    def getLocation(self):
+        return self.x, self.y

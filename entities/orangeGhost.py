@@ -100,3 +100,5 @@ class OrangeGhost:
             pygame.draw.rect(screen, (255, 215, 0), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
     def getNodes(self):
         return self.nodes
+    def getLocation(self):
+        return self.x, self.y
