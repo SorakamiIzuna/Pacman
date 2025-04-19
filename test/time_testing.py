@@ -15,9 +15,9 @@ orangeTime=[]
 pinkTime=[]
 rounds = 100
 def measureTimeEachGhost(ghost, target_x, target_y):
-    start_time = time.time()
+    start_time = time.perf_counter()
     ghost.find_path_to_pacman(target_x, target_y)
-    end_time = time.time()
+    end_time = time.perf_counter()
     search_time = end_time - start_time
     print(f"{ghost.__class__.__name__} | Search Time: {search_time:.20f}s")
     if ghost.__class__.__name__ == "BlueGhost":
@@ -28,7 +28,9 @@ def measureTimeEachGhost(ghost, target_x, target_y):
         redTime.append(search_time)
     elif ghost.__class__.__name__ == "OrangeGhost":
         orangeTime.append(search_time)
+    return search_time
 def timeMeasure(rounds):
+    pacman=Pacman()
     for i in range(rounds):
         pacman=Pacman()
 

@@ -33,7 +33,7 @@ def measureMemoryEachGhost(ghost, target_x, target_y):
         redMemory.append(memory_kb)
     elif ghost_name == "OrangeGhost":
         orangeMemory.append(memory_kb)
-
+    return memory_kb
 def memoryMeasure(rounds):
     for _ in range(rounds):
         pacman = Pacman()

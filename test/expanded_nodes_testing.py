@@ -23,6 +23,7 @@ def countNodesOfEachGhost(ghost, target_x, target_y):
         redNodes.append(count)
     elif ghost_name == "OrangeGhost":
         orangeNodes.append(count)
+    return count
 def countNodes(rounds):
     for _ in range(rounds):
         pacman=Pacman()
@@ -78,3 +79,5 @@ plt.ylabel('Node')
 plt.title('Average Nodes Expanded per Search')
 plt.tight_layout()
 plt.show()
+
+print(blueNodes)
