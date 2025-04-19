@@ -97,3 +97,5 @@ class OrangeGhost:
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         for px, py in self.path[1:]:
             pygame.draw.rect(screen, (255, 215, 0), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
+    def getPath(self):
+        return self.path
