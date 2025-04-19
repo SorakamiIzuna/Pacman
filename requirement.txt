@@ -3,3 +3,8 @@ random
 collections
 heapq
 sys
+matplotlib.pyplot
+numpy
+os
+tracemalloc
+time
