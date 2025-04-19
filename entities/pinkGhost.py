@@ -43,13 +43,13 @@ class PinkGhost:
         path = []
 
         def dfs(x, y):
-            self.nodes+=1
             if (x, y) == (target_x, target_y):
                 path.append((x, y))
                 return True
             if (x, y) in visited or not self.is_valid(x, y) or ((x, y) in forbidden_cells and (x, y) != (target_x, target_y)):
                 return False
             visited.add((x, y))
+            self.nodes += 1
             directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
             if y == 14:
                 if x == 0:
