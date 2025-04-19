@@ -2,10 +2,11 @@ import random
 import heapq
 import pygame
 from maze import MAZE_LAYOUT, TILE_SIZE
-
+import os
+from config import ASSET_DIR
 class OrangeGhost:
     def __init__(self, pacman_pos):
-        self.image = pygame.image.load("assets/orange.png")
+        self.image = pygame.image.load(os.path.join(ASSET_DIR, "orange.png"))
         self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.x, self.y = self.get_random_position(pacman_pos)
         self.start_position = (self.x, self.y)
