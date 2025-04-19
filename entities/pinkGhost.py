@@ -10,7 +10,7 @@ class PinkGhost:
         self.x, self.y = self.get_random_position(pacman_pos)
         self.start_position = (self.x, self.y)
         self.path = []
-
+        self.nodes=0
     def get_random_position(self, pacman_pos):
         empty_cells = []
         restricted_rows = {10, 11, 12, 16, 17, 18}
@@ -43,6 +43,7 @@ class PinkGhost:
         path = []
 
         def dfs(x, y):
+            self.nodes+=1
             if (x, y) == (target_x, target_y):
                 path.append((x, y))
                 return True
@@ -92,5 +93,5 @@ class PinkGhost:
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         for px, py in self.path[1:]:
             pygame.draw.rect(screen, (255, 182, 193), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
-    def getPath(self):
-        return self.path
+    def getNodes(self):
+        return self.nodes
