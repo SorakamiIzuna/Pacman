@@ -1,15 +1,16 @@
 import random
 import pygame
 from maze import MAZE_LAYOUT,TILE_SIZE
-
+import os
+from config import ASSET_DIR
 class PinkGhost:
     def __init__(self, pacman_pos):
-        self.image = pygame.image.load("assets/pink.png")
+        self.image = pygame.image.load(os.path.join(ASSET_DIR, "pink.png"))
         self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.x, self.y = self.get_random_position(pacman_pos)
         self.start_position = (self.x, self.y)
         self.path = []
-
+        self.nodes=0
     def get_random_position(self, pacman_pos):
         empty_cells = []
         restricted_rows = {10, 11, 12, 16, 17, 18}
@@ -48,6 +49,7 @@ class PinkGhost:
             if (x, y) in visited or not self.is_valid(x, y) or ((x, y) in forbidden_cells and (x, y) != (target_x, target_y)):
                 return False
             visited.add((x, y))
+            self.nodes += 1
             directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
             if y == 14:
                 if x == 0:
@@ -91,3 +93,5 @@ class PinkGhost:
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         for px, py in self.path[1:]:
             pygame.draw.rect(screen, (255, 182, 193), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
+    def getNodes(self):
+        return self.nodes

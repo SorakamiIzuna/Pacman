@@ -2,13 +2,14 @@ import random
 import heapq
 import pygame
 from maze import MAZE_LAYOUT, TILE_SIZE
-
-def a_star(start, goal, is_valid_func, heuristic_func, forbidden_cells=set()):
+import os
+from config import ASSET_DIR
+def a_star(start, goal, is_valid_func, heuristic_func, forbidden_cells=set(),count_expanded=False):
     frontier = []
     heapq.heappush(frontier, (0, start))
     came_from = {start: None}
     cost_so_far = {start: 0}
-
+    nodes_expanded = 0
     while frontier:
         _, current = heapq.heappop(frontier)
 
@@ -41,9 +42,10 @@ def a_star(start, goal, is_valid_func, heuristic_func, forbidden_cells=set()):
                 priority = new_cost + heuristic_func(goal, next_pos)
                 heapq.heappush(frontier, (priority, next_pos))
                 came_from[next_pos] = current
-
+        if count_expanded:
+            nodes_expanded += 1  # Increment the expanded nodes counter
     if goal not in came_from:
-        return []  # No path found
+        return [], nodes_expanded  # No path found
 
     # Reconstruct path
     path = []
@@ -53,16 +55,17 @@ def a_star(start, goal, is_valid_func, heuristic_func, forbidden_cells=set()):
         current = came_from[current]
     path.append(start)
     path.reverse()
-    return path
+    return path, nodes_expanded
 
 
 class RedGhost:
     def __init__(self, pacman_pos):
-        self.image = pygame.image.load("assets/red.png")
+        self.image = pygame.image.load(os.path.join(ASSET_DIR, "red.png"))
         self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.x, self.y = self.get_random_position(pacman_pos)
         self.start_position = (self.x, self.y)
         self.path = []
+        self.nodes = 0
 
     def get_random_position(self, pacman_pos):
         empty_cells = []
@@ -102,7 +105,7 @@ class RedGhost:
             forbidden_cells = set()
         start = (self.x, self.y)
         goal = (target_x, target_y)
-        self.path = a_star(start, goal, self.is_valid, self.heuristic, forbidden_cells)
+        self.path, self.nodes = a_star(start, goal, self.is_valid, self.heuristic, forbidden_cells, count_expanded=True)
 
     def move_step(self):
         if self.path and len(self.path) > 1:
@@ -119,3 +122,5 @@ class RedGhost:
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         for px, py in self.path[1:]:
             pygame.draw.rect(screen, (255, 0, 0), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
+    def getNodes(self):
+        return self.nodes

@@ -2,14 +2,16 @@ import random
 from collections import deque
 import pygame
 from maze import MAZE_LAYOUT, TILE_SIZE
-
+import os
+from config import ASSET_DIR
 class BlueGhost:
     def __init__(self, pacman_pos):
-        self.image = pygame.image.load("assets/blue.png")
+        self.image = pygame.image.load(os.path.join(ASSET_DIR, "blue.png"))
         self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.x, self.y = self.get_random_position(pacman_pos)
         self.start_position = (self.x, self.y)
         self.path = []
+        self.nodes=0
 
     def get_random_position(self, pacman_pos):
         empty_cells = []
@@ -76,7 +78,7 @@ class BlueGhost:
                     visited.add((next_x, next_y))
                     parent_map[(next_x, next_y)] = (current_x, current_y)
                     queue.append((next_x, next_y))
-
+            self.nodes += 1 
         self.path = []
 
     def is_valid(self, x, y):
@@ -99,3 +101,5 @@ class BlueGhost:
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         for px, py in self.path[1:]:
             pygame.draw.rect(screen, (173, 216, 230), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
+    def getNodes(self):
+        return self.nodes

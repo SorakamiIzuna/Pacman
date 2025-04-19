@@ -2,14 +2,16 @@ import random
 import heapq
 import pygame
 from maze import MAZE_LAYOUT, TILE_SIZE
-
+import os
+from config import ASSET_DIR
 class OrangeGhost:
     def __init__(self, pacman_pos):
-        self.image = pygame.image.load("assets/orange.png")
+        self.image = pygame.image.load(os.path.join(ASSET_DIR, "orange.png"))
         self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.x, self.y = self.get_random_position(pacman_pos)
         self.start_position = (self.x, self.y)
         self.path = []
+        self.nodes=0
 
     def get_random_position(self, pacman_pos):
         empty_cells = []
@@ -49,12 +51,13 @@ class OrangeGhost:
             if (x, y) in visited:
                 continue
             visited.add((x, y))
+            self.nodes += 1
             new_path = path + [(x, y)]
 
             if (x, y) == (target_x, target_y):
                 self.path = new_path
                 return
-
+            
             directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
             if y == 14:
                 if x == 0:
@@ -73,7 +76,6 @@ class OrangeGhost:
                     (nx, ny) not in visited and 
                     ((nx, ny) not in forbidden_cells or (nx, ny) == (target_x, target_y))):
                     heapq.heappush(frontier, (cost + 1, (nx, ny), new_path))
-
         self.path = []
 
     def is_valid(self, x, y):
@@ -96,3 +98,5 @@ class OrangeGhost:
         screen.blit(self.image, (self.x * tile_size, self.y * tile_size))
         for px, py in self.path[1:]:
             pygame.draw.rect(screen, (255, 215, 0), (px * tile_size, py * tile_size, tile_size, tile_size), 1)
+    def getNodes(self):
+        return self.nodes
