@@ -1,10 +1,11 @@
 import random
 import pygame
 from maze import MAZE_LAYOUT,TILE_SIZE
-
+import os
+from config import ASSET_DIR
 class Pacman:
     def __init__(self):
-        self.image = pygame.image.load("assets/pacman.png")
+        self.image = pygame.image.load(os.path.join(ASSET_DIR, "pacman.png"))
         self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
         self.initial_position = self.find_fixed_position()
         self.x, self.y = self.initial_position
