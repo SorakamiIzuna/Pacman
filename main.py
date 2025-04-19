@@ -65,7 +65,7 @@ def level_selection_screen():
         screen.blit(title_surface, title_rect)
 
         level_buttons = []
-        for i in range(1, 6):
+        for i in range(1, 7):  # Adjusted range to include Level 6
             button = pygame.Rect(SCREEN_WIDTH // 2 - 50, 100 + (i - 1) * 60, 100, 40)
             pygame.draw.rect(screen, (0, 0, 255), button)
             screen.blit(FONT.render(f"Level {i}", True, (255, 255, 255)), (SCREEN_WIDTH // 2 - 30, 110 + (i - 1) * 60))
@@ -121,6 +121,18 @@ def set_level(level):
         pink_ghost = PinkGhost(pacman_pos=(pacman.x, pacman.y))
         orange_ghost = OrangeGhost(pacman_pos=(pacman.x, pacman.y))
         red_ghost = RedGhost(pacman_pos=(pacman.x, pacman.y))
+    elif level == 6:
+        blue_ghost = BlueGhost(pacman_pos=(pacman.x, pacman.y))
+        pink_ghost = PinkGhost(pacman_pos=(pacman.x, pacman.y))
+        orange_ghost = OrangeGhost(pacman_pos=(pacman.x, pacman.y))
+        red_ghost = RedGhost(pacman_pos=(pacman.x, pacman.y))
+
+# Add a button to return to the level selection menu
+def draw_return_button():
+    return_button = pygame.Rect(345, SCREEN_HEIGHT - 35, 150, 30)  # Adjusted position
+    pygame.draw.rect(screen, (255, 0, 0), return_button)
+    screen.blit(FONT.render("Return to Menu", True, (255, 255, 255)), (355, SCREEN_HEIGHT - 30))
+    return return_button
 
 def game_loop():
     global start_pressed, old_pacman_pos, last_path_update_time
@@ -154,6 +166,7 @@ def game_loop():
             red_ghost.draw(screen, TILE_SIZE)
 
         new_random_btn, reset_btn, start_btn = draw_buttons()
+        return_button = draw_return_button()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -197,6 +210,8 @@ def game_loop():
                         red_ghost.find_path_to_pacman(pacman.x, pacman.y)
                     start_pressed = True
                     old_pacman_pos = (pacman.x, pacman.y)
+                elif return_button.collidepoint(event.pos):
+                    return  # Exit the game loop and return to the level selection menu
 
         if start_pressed:
             current_time = pygame.time.get_ticks()
