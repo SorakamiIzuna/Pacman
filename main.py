@@ -12,7 +12,7 @@ pygame.init()
 ROWS = len(MAZE_LAYOUT)
 COLS = len(MAZE_LAYOUT[0])
 SCREEN_WIDTH = COLS * TILE_SIZE
-SCREEN_HEIGHT = ROWS * TILE_SIZE
+SCREEN_HEIGHT = ROWS * TILE_SIZE +50
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Pac-Man")
